@@ -111,16 +111,16 @@ btn_predict = st.sidebar.button("predict")
 
 
 
-st.subheader("Result :")
+st.subheader("")
 
 if btn_predict:
-
     values = [In1,In2,In3,In4,In5,In6,In7,In8,In9,In10,In11,In12,In13,In14,In15,In16]
     column_names = ["Age","Gender","Polyuria","Polydipsia","sudden weight loss","weakness","Polyphagia","Genital thrush	",\
                     "visual blurring","Itching","Irritability",\
                     "delayed healing","partial paresis","muscle stiffness","Alopecia","Obesity"]
     df = pd.DataFrame(values, column_names)
-
+    st.write(df)
+    st.write("**Result** :")
     if df[0][1] == 'Man':
         df[0][1] = 1
     elif df[0][1] == 'Women':
