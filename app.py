@@ -3,6 +3,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import time
 from PIL import Image
+import os
+import base64
 
 
 @st.cache(allow_output_mutation=True)
@@ -71,35 +73,65 @@ def train_model():
 
 data = get_data()
 html_temp = """
-  <div style="background-color:blue;padding:10px">
-  <h2 style="color:white;text-align:center;"> Early Stage Diabetes Risk Prediction app </h2>
+  <div style="color:black;text-align:center;font-family:verdana;font-size:300%;"> Early Stage Diabetes <br> Risk Prediction application </div>
   </div>
 
   """
 st.markdown(html_temp, unsafe_allow_html=True)
 
-image = Image.open('Logo.jpeg')
-st.sidebar.image(image, width=100, height=50)
+page_bg_img = '''
+<style>
+body {
+background-image: url("https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg?size=626&ext=jpg&ga=GA1.2.2009260354.1641772800");
+background-size: cover;
+}
+</style>
+'''
 
-st.sidebar.subheader("Health informations")
+st.sidebar.markdown(page_bg_img, unsafe_allow_html=True)
+
+image = Image.open('logo2.png')
+st.sidebar.image(image)
+
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<button style="background-color:gray"><a style="text-decoration:none; color:white" href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a></button>'
+    return href
+st.sidebar.markdown(get_binary_file_downloader_html('User-Guide.pdf', 'User-Guide'), unsafe_allow_html=True)
+
+st.sidebar.subheader("Enter your Medical informations")
 In1 =  st.sidebar.number_input("Age", min_value=20,max_value=65,step=1)
 In2 =  st.sidebar.selectbox("Gender:", ["Man","Women"])
 In3 =  st.sidebar.selectbox("Polyuria:",["No","Yes"])
 In4 =  st.sidebar.selectbox("Polydipsia:",["No","Yes"])
-In5 =  st.sidebar.selectbox("sudden weight loss:",["No","Yes"])
-In6 =  st.sidebar.selectbox("weakness:",["No","Yes"])
+In5 =  st.sidebar.selectbox("Sudden weight loss:",["No","Yes"])
+In6 =  st.sidebar.selectbox("Weakness:",["No","Yes"])
 In7 =  st.sidebar.selectbox("Polyphagia:",["No","Yes"])
 In8 =  st.sidebar.selectbox("Genital thrush :",["No","Yes"])
 In9 =  st.sidebar.selectbox("visual blurring :",["No","Yes"])
 In10 = st.sidebar.selectbox("Itching:",["No","Yes"])
 In11 = st.sidebar.selectbox("Irritability:",["No","Yes"])
-In12 = st.sidebar.selectbox("delayed healing:",["No","Yes"])
-In13 = st.sidebar.selectbox("partial paresis:",["No","Yes"])
-In14 = st.sidebar.selectbox("muscle stiffness:",["No","Yes"])
+In12 = st.sidebar.selectbox("Delayed healing:",["No","Yes"])
+In13 = st.sidebar.selectbox("Partial paresis:",["No","Yes"])
+In14 = st.sidebar.selectbox("Muscle stiffness:",["No","Yes"])
 In15 = st.sidebar.selectbox("Alopecia:",["No","Yes"])
 In16 = st.sidebar.selectbox("Obesity:",["No","Yes"])
 
 results = train_model()
+
+m = st.markdown("""
+<style>
+div.stButton > button:first-child {
+    background-color: #0099ff;
+    color:#ffffff;
+}
+div.stButton > button:hover {
+    background-color: black;
+    color:blue;
+    }
+</style>""", unsafe_allow_html=True)
 
 btn_predict = st.sidebar.button("SUBMIT")
 
@@ -114,7 +146,7 @@ if btn_predict:
                     "delayed healing","partial paresis","muscle stiffness","Alopecia","Obesity"]
     df = pd.DataFrame(values, column_names)
 
-    st.write(df)
+    st.write(df.T)
 
     if df[0][1] == 'Man':
         df[0][1] = 1
@@ -142,8 +174,9 @@ if btn_predict:
 
     result = result[0]
 
-    if result == 0: st.error('your result: **NEGATIVE**.  \n Diagnosis suggests that patient have Diabetes Risk.  \n Please get checked soon')
-    if result == 1: st.success("your result: **POSITIVE**.  \n  "
+    if result == 1: st.error('your result: **POSITIVE**.  \n Diagnosis suggests that patient have Diabetes Risk.  \n Please get checked soon')
+    if result == 0: st.success("your result: **NEGATIVE**.  \n  "
                                + "Diagnosis suggests that patient does not have Diabetes Risk.")
+
 
 
