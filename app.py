@@ -10,7 +10,7 @@ def get_data():
     return pd.read_csv('diabetes_data_upload.csv')
 
 def train_model():
-    x = test_size
+    x = 0.2
     data = get_data()
 
     from sklearn.preprocessing import LabelEncoder
@@ -81,7 +81,7 @@ st.markdown(html_temp, unsafe_allow_html=True)
 image = Image.open('Logo.jpeg')
 st.sidebar.image(image, width=100, height=50)
 
-st.sidebar.subheader("Input Attributes")
+st.sidebar.subheader("Health informations")
 In1 =  st.sidebar.number_input("Age", min_value=20,max_value=65,step=1)
 In2 =  st.sidebar.selectbox("Gender:", ["Man","Women"])
 In3 =  st.sidebar.selectbox("Polyuria:",["No","Yes"])
@@ -99,15 +99,9 @@ In14 = st.sidebar.selectbox("muscle stiffness:",["No","Yes"])
 In15 = st.sidebar.selectbox("Alopecia:",["No","Yes"])
 In16 = st.sidebar.selectbox("Obesity:",["No","Yes"])
 
-test_size = st.sidebar.slider  (label = 'Test size (%):',
-                            min_value=0,
-                            max_value=100,
-                            value=20,
-                            step=1)
-
 results = train_model()
 
-btn_predict = st.sidebar.button("predict")
+btn_predict = st.sidebar.button("SUBMIT")
 
 
 
@@ -119,8 +113,9 @@ if btn_predict:
                     "visual blurring","Itching","Irritability",\
                     "delayed healing","partial paresis","muscle stiffness","Alopecia","Obesity"]
     df = pd.DataFrame(values, column_names)
+
     st.write(df)
-    st.write("**Result** :")
+
     if df[0][1] == 'Man':
         df[0][1] = 1
     elif df[0][1] == 'Women':
@@ -147,15 +142,8 @@ if btn_predict:
 
     result = result[0]
 
-    if result == 0: st.write("prediction result: **NEGATIVE**")
-    if result == 1: st.write("prediction result: **POSITIVE**")
-    st.write("Best Model used: ", model)
-    st.write("DATA SET WAS SPLIT INTO - ", 100 - test_size, '% / ''Test -', test_size, '%')
-
-    st.subheader("EVALUATION (%)")
-    st.table(results[["Model", "Recall", "Accuracy", "Precision", "F1"]].sort_values(by="Recall", ascending=False))
-
-    st.subheader("train and test time (s)")
-    st.table(results[["Model", "time_train", "time_test"]].sort_values(by="time_train", ascending=True))
+    if result == 0: st.error('your result: **NEGATIVE**.  \n Diagnosis suggests that patient have Diabetes Risk.  \n Please get checked soon')
+    if result == 1: st.success("your result: **POSITIVE**.  \n  "
+                               + "Diagnosis suggests that patient does not have Diabetes Risk.")
 
 
